@@ -1,0 +1,287 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Gép: 127.0.0.1
+-- Létrehozás ideje: 2025. Sze 09. 10:31
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- Adatbázis: `projektmenedzsment`
+--
+CREATE DATABASE IF NOT EXISTS `projektmenedzsment` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `projektmenedzsment`;
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `dolgozok`
+--
+
+CREATE TABLE `dolgozok` (
+  `id` int(11) NOT NULL,
+  `felh_nev` text NOT NULL,
+  `valodi_nev` text DEFAULT NULL,
+  `jelszo` text NOT NULL,
+  `jogosultsag` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `dolgozok`
+--
+
+INSERT INTO `dolgozok` (`id`, `felh_nev`, `valodi_nev`, `jelszo`, `jogosultsag`) VALUES
+(1, 'gfd', 'Grósz Ferenc', '$2y$10$SCCcuDwfiWMss/i94PKh9eu4EdHuKdypuKl/JNe4eiWvZNQQ/ASL2', 1),
+(3, 'joci', 'Nagy József', '$2y$10$xtLCE2aPcnI/I4QCkiok.eS/15/lOmyoWhhGt96dckM8GzjgKD6D6', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `jarmu`
+--
+
+CREATE TABLE `jarmu` (
+  `id` int(11) NOT NULL,
+  `rendszam` text NOT NULL,
+  `uzemanyag` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `jarmu`
+--
+
+INSERT INTO `jarmu` (`id`, `rendszam`, `uzemanyag`) VALUES
+(1, 'HUF-106', 'Benzin');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `projektek`
+--
+
+CREATE TABLE `projektek` (
+  `id` int(11) NOT NULL,
+  `nev` varchar(255) NOT NULL,
+  `kezdet` date NOT NULL,
+  `veg` date DEFAULT NULL,
+  `leiras` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `projektek`
+--
+
+INSERT INTO `projektek` (`id`, `nev`, `kezdet`, `veg`, `leiras`) VALUES
+(1, 'NFI Kazánház', '2025-08-01', '2025-08-21', 'Új építés'),
+(2, 'Projektfeladat', '2025-09-09', NULL, '');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `projekt_napok`
+--
+
+CREATE TABLE `projekt_napok` (
+  `id` int(11) NOT NULL,
+  `projekt_id` int(11) NOT NULL,
+  `datum` date NOT NULL,
+  `leiras` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `projekt_napok`
+--
+
+INSERT INTO `projekt_napok` (`id`, `projekt_id`, `datum`, `leiras`) VALUES
+(1, 1, '2025-08-15', NULL),
+(2, 1, '2025-08-16', NULL),
+(3, 1, '2025-08-17', NULL),
+(4, 2, '2025-09-09', 'hello világ');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `projekt_nap_auto`
+--
+
+CREATE TABLE `projekt_nap_auto` (
+  `id` int(11) NOT NULL,
+  `projekt_nap_id` int(11) NOT NULL,
+  `jarmu_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `projekt_nap_auto`
+--
+
+INSERT INTO `projekt_nap_auto` (`id`, `projekt_nap_id`, `jarmu_id`) VALUES
+(11, 1, 1),
+(35, 2, 1),
+(36, 4, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `projekt_nap_dolgozo`
+--
+
+CREATE TABLE `projekt_nap_dolgozo` (
+  `id` int(11) NOT NULL,
+  `projekt_nap_id` int(11) NOT NULL,
+  `dolgozo_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `projekt_nap_dolgozo`
+--
+
+INSERT INTO `projekt_nap_dolgozo` (`id`, `projekt_nap_id`, `dolgozo_id`) VALUES
+(128, 2, 1),
+(129, 4, 3),
+(132, 4, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `szabadsag`
+--
+
+CREATE TABLE `szabadsag` (
+  `id` int(11) NOT NULL,
+  `dolgozo_id` int(11) NOT NULL,
+  `nap` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `szabadsag`
+--
+
+INSERT INTO `szabadsag` (`id`, `dolgozo_id`, `nap`) VALUES
+(3, 3, '2025-08-16');
+
+--
+-- Indexek a kiírt táblákhoz
+--
+
+--
+-- A tábla indexei `dolgozok`
+--
+ALTER TABLE `dolgozok`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `jarmu`
+--
+ALTER TABLE `jarmu`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `projektek`
+--
+ALTER TABLE `projektek`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `projekt_napok`
+--
+ALTER TABLE `projekt_napok`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projekt_id` (`projekt_id`);
+
+--
+-- A tábla indexei `projekt_nap_auto`
+--
+ALTER TABLE `projekt_nap_auto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projekt_nap_id` (`projekt_nap_id`),
+  ADD KEY `jarmu_id` (`jarmu_id`);
+
+--
+-- A tábla indexei `projekt_nap_dolgozo`
+--
+ALTER TABLE `projekt_nap_dolgozo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projekt_nap_id` (`projekt_nap_id`),
+  ADD KEY `dolgozo_id` (`dolgozo_id`);
+
+--
+-- A tábla indexei `szabadsag`
+--
+ALTER TABLE `szabadsag`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A kiírt táblák AUTO_INCREMENT értéke
+--
+
+--
+-- AUTO_INCREMENT a táblához `dolgozok`
+--
+ALTER TABLE `dolgozok`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT a táblához `jarmu`
+--
+ALTER TABLE `jarmu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT a táblához `projektek`
+--
+ALTER TABLE `projektek`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT a táblához `projekt_napok`
+--
+ALTER TABLE `projekt_napok`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT a táblához `projekt_nap_auto`
+--
+ALTER TABLE `projekt_nap_auto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT a táblához `projekt_nap_dolgozo`
+--
+ALTER TABLE `projekt_nap_dolgozo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
+
+--
+-- AUTO_INCREMENT a táblához `szabadsag`
+--
+ALTER TABLE `szabadsag`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Megkötések a kiírt táblákhoz
+--
+
+--
+-- Megkötések a táblához `projekt_napok`
+--
+ALTER TABLE `projekt_napok`
+  ADD CONSTRAINT `projekt_napok_ibfk_1` FOREIGN KEY (`projekt_id`) REFERENCES `projektek` (`id`) ON DELETE CASCADE;
+
+--
+-- Megkötések a táblához `projekt_nap_auto`
+--
+ALTER TABLE `projekt_nap_auto`
+  ADD CONSTRAINT `projekt_nap_auto_ibfk_1` FOREIGN KEY (`projekt_nap_id`) REFERENCES `projekt_napok` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `projekt_nap_auto_ibfk_2` FOREIGN KEY (`jarmu_id`) REFERENCES `jarmu` (`id`);
+
+--
+-- Megkötések a táblához `projekt_nap_dolgozo`
+--
+ALTER TABLE `projekt_nap_dolgozo`
+  ADD CONSTRAINT `projekt_nap_dolgozo_ibfk_1` FOREIGN KEY (`projekt_nap_id`) REFERENCES `projekt_napok` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `projekt_nap_dolgozo_ibfk_2` FOREIGN KEY (`dolgozo_id`) REFERENCES `dolgozok` (`id`);
+COMMIT;
